@@ -9,7 +9,7 @@ namespace Z_City
     static class Program
     {
         /// <summary>
-        /// The main entry point for the application.
+        /// Главная точка входа для приложения.
         /// </summary>
         [STAThread]
         static void Main()

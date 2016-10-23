@@ -1,1 +1,1 @@
-D:\Учеба\Теория графов\dev\Z_City\Z_City\Z_City\bin\Debug\Z_City.exe.config
+C:\Users\Vladimir\Desktop\Город Z\ZCity\Z_City\Z_City\Z_City\bin\Debug\Z_City.exe.config
