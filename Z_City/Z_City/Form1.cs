@@ -21,11 +21,8 @@ namespace Z_City
             InitializeComponent();
 
             // чтение input файла
-            var inputFile = "";
-            var stream1 = new StreamReader(Resources.input, Encoding.GetEncoding(1251));
-            inputFile = stream1.ReadToEnd();
-
-            var inputParams = SplitText(inputFile);
+            var stream = new StreamReader(Resources.input, Encoding.GetEncoding(1251));
+            var inputParams = SplitText(stream.ReadToEnd());
 
             var graph = new Graph
             {
