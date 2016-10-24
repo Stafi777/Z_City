@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using ClassLibrary;
+using Z_City.Properties;
 
 namespace Z_City
 {
@@ -19,38 +20,37 @@ namespace Z_City
         {
             InitializeComponent();
 
-            // чтение iput файла
-            string InputFile = "";
-            StreamReader Stream1 = new StreamReader(@"C:\Users\Vladimir\Desktop\Город Z\ZCity\Z_City\Z_City\Z_City\data\input.txt", Encoding.GetEncoding(1251));
-            InputFile = Stream1.ReadToEnd();
+            // чтение input файла
+            var inputFile = "";
+            var stream1 = new StreamReader(Resources.input, Encoding.GetEncoding(1251));
+            inputFile = stream1.ReadToEnd();
 
-            List<string> InputParams = new List<string>();
-            InputParams = SplitText(InputFile);
+            var inputParams = SplitText(inputFile);
 
             var graph = new Graph
             {
-                RootsCount = Convert.ToInt32(InputParams[0]),
-                EdgesCount = Convert.ToInt32(InputParams[1])
+                RootsCount = int.Parse(inputParams[0]),
+                EdgesCount = int.Parse(inputParams[1])
             };
-            for(int i = 1; i < 25; i++)
+            for(var i = 1; i < 25; i++)
             {
-                graph.RootsArray[i - 1].RootName = Convert.ToChar(InputParams[3 * i]);
-                graph.RootsArray[i - 1].RootWeight = Convert.ToChar(InputParams[3 * i + 1]);
+                graph.RootsArray.Add(new Roots
+                {
+                    RootName = inputParams[3 * i],
+                    RootWeight = int.Parse(inputParams[3 * i + 1])
+                });
             }
-            
         }
 
         public List<string> SplitText(string s)
         {
             // разделяющие знаки
-            char[] SeparateSymbols = { ' ', ',', '.', '\r', '\n'};
+            char[] separateSymbols = { ' ', ',', '.', '\r', '\n'};
 
             // результирующий список
-            List<string> SplitList = new List<string>();
+            var splitList = s.Split(separateSymbols).ToList();
 
-            SplitList = s.Split(SeparateSymbols).ToList<string>();
-
-            return SplitList;
+            return splitList;
         }
     }
 }

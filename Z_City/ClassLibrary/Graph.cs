@@ -1,17 +1,19 @@
-﻿namespace ClassLibrary
+﻿using System.Collections.Generic;
+
+namespace ClassLibrary
 {
     public class Graph
     {
         // Количество вершин
-        public int RootsCount;
+        public int RootsCount { get; set; }
 
         // Количество ребер
-        public int EdgesCount;
+        public int EdgesCount { get; set; }
 
         // Массив вершин
-        public Roots[] RootsArray = new Roots[25];
+        public List<Roots> RootsArray { get; set; }
 
         // Массив ребер
-        public Edges[] EdgesArray = new Edges[60];
+        public List<Edges> EdgesArray { get; set; }
     }
 }

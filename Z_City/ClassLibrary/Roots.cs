@@ -3,9 +3,9 @@
     public class Roots
     {
         // Имя вершины
-        public char RootName;
+        public string RootName { get; set; }
 
         // Вес вершины
-        public int RootWeight;
+        public int RootWeight { get; set; }
     }
 }
