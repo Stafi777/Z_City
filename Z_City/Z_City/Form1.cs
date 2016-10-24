@@ -21,20 +21,30 @@ namespace Z_City
             InitializeComponent();
 
             // чтение input файла
-            var stream = new StreamReader(Resources.input, Encoding.GetEncoding(1251));
-            var inputParams = SplitText(stream.ReadToEnd());
+            //var stream = new StreamReader(Resources.input, Encoding.GetEncoding(1251));
+            var inputParams = SplitText(Resources.input);
+            var rootsCount = int.Parse(inputParams[0]);
+            var edgesCount = int.Parse(inputParams[1]);
+            var graph = new Graph();
 
-            var graph = new Graph
-            {
-                RootsCount = int.Parse(inputParams[0]),
-                EdgesCount = int.Parse(inputParams[1])
-            };
-            for(var i = 1; i < 25; i++)
+            for(var i = 1; i <= rootsCount; i++)
             {
                 graph.RootsArray.Add(new Roots
                 {
-                    RootName = inputParams[3 * i],
-                    RootWeight = int.Parse(inputParams[3 * i + 1])
+                    RootName = inputParams[2 * i],
+                    RootWeight = int.Parse(inputParams[2 * i + 1])
+                });
+            }
+
+            for (var i = 0; i < edgesCount; i++)
+            {
+                var ind = (rootsCount + 1) * 2 + i * 4;
+                graph.EdgesArray.Add(new Edges
+                {
+                    StartRoot = graph.RootsArray.FirstOrDefault(r => r.RootName == inputParams[ind]),
+                    EndRoot = graph.RootsArray.FirstOrDefault(r => r.RootName == inputParams[ind + 1]),
+                    EdgeWeight = int.Parse(inputParams[ind + 2]),
+                    Orientation = inputParams[ind + 3] == "1"
                 });
             }
         }
@@ -45,7 +55,7 @@ namespace Z_City
             char[] separateSymbols = { ' ', ',', '.', '\r', '\n'};
 
             // результирующий список
-            var splitList = s.Split(separateSymbols).ToList();
+            var splitList = s.Split(separateSymbols, StringSplitOptions.RemoveEmptyEntries).ToList();
 
             return splitList;
         }
