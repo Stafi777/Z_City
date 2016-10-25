@@ -11,10 +11,16 @@ namespace ClassLibrary
         }
 
         // Количество вершин
-        public int RootsCount => RootsArray.Count;
+        public int RootsCount
+        {
+            get { return RootsArray.Count; }
+        }
 
         // Количество ребер
-        public int EdgesCount => EdgesArray.Count;
+        public int EdgesCount
+        {
+            get { return EdgesArray.Count; }
+        }
 
         // Массив вершин
         public List<Roots> RootsArray { get; set; }
