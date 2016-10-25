@@ -10,9 +10,17 @@ namespace Z_City
     public partial class Form1 : Form
     {
         private readonly Graph _g;
+
+        // матрица смежности
         private int[,] _c;
+
+        // матрица расстояний
         private int[,] _d;
+
+        // лямбда
         private int l;
+
+        // изменение лямбды
         private int dl;
 
         public Form1()
@@ -116,6 +124,103 @@ namespace Z_City
                     }
                 }
             }
+        }
+
+        private void FindRoots()
+        {
+            // массив лучших смещений для ребер
+            var points = new int[_g.EdgesCount];
+            // массив достигаемых вершин
+            int[][] edgesRoots;
+
+            do
+            {
+                edgesRoots = new int[_g.EdgesCount][];
+
+                // проходим по всем ребрам
+                for (var i = 0; i < _g.EdgesCount; i++)
+                {
+                    edgesRoots[i] = new int[_g.RootsCount];
+
+                    // продвигаясь по каждому ребру
+                    for (var j = 1; j < _g.EdgesArray[i].EdgeWeight; j++)
+                    {
+                        var roots = new int[_g.RootsCount];
+                        // находим все доступные вершины
+                        for (var k = 0; k < _g.RootsCount; k++)
+                        {
+                            roots[k] = RootIsAccessible(_g.EdgesArray[i], _g.RootsArray[k], j) ? 1 : 0;
+                        }
+
+                        // если доступных вершин стало больше - обновляем значения
+                        if (edgesRoots[i].Sum(e => e) < roots.Sum(e => e))
+                        {
+                            points[i] = j;
+                            edgesRoots[i] = roots;
+                        }
+                    }
+                }
+
+                l += dl;
+            }
+            while (!IsCovered(edgesRoots));
+
+            FindMinCover(edgesRoots, points);
+        }
+
+        private bool RootIsAccessible(Edges edge, Roots end, int dif)
+        {
+            var firstStartInd = _g.RootsArray.IndexOf(edge.StartRoot);
+            var secondStartInd = _g.RootsArray.IndexOf(edge.EndRoot);
+            var endInd = _g.RootsArray.IndexOf(end);
+            var dFirst = _d[firstStartInd, endInd] + dif;
+            var dSecond = _d[secondStartInd, endInd] + (edge.EdgeWeight - dif);
+            var d = Math.Min(dFirst, dSecond);
+
+            return d * end.RootWeight <= l;
+        }
+
+        private bool IsCovered(int[][] roots)
+        {
+            for (var i = 0; i < _g.RootsCount; i++)
+            {
+                var covered = false;
+                for (var j = 0; j < _g.EdgesCount; j++)
+                {
+                    if (roots[j][i] == 1)
+                    {
+                        covered = true;
+                    }
+                }
+
+                if (!covered) return false;
+            }
+
+            return true;
+        }
+
+        private void FindMinCover(int[][] roots, int[] points)
+        {
+            // столбцы, которые покрывает одна строка
+            var cores = new List<int>();
+            for (var i = 0; i < _g.RootsCount; i++)
+            {
+                var sum = 0;
+                for (var j = 0; j < _g.EdgesCount; j++)
+                {
+                    sum += roots[j][i];
+                }
+
+                if (sum == 1)
+                {
+                    cores.Add(i);
+                }
+            }
+        }
+
+        private void button_Calc_Click(object sender, EventArgs e)
+        {
+            FindRoots();
         }
     }
 }
