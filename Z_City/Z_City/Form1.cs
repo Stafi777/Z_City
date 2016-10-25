@@ -17,11 +17,14 @@ namespace Z_City
         // матрица расстояний
         private int[,] _d;
 
+        // полученные значения точек
+        private List<Edges> _y;
+
         // лямбда
-        private int l;
+        private int _l;
 
         // изменение лямбды
-        private int dl;
+        private readonly int _dl;
 
         public Form1()
         {
@@ -32,7 +35,7 @@ namespace Z_City
             var rootsCount = int.Parse(inputParams[0]);
             var edgesCount = int.Parse(inputParams[1]);
             _g = new Graph();
-            l = 0;
+            _l = 0;
 
             for (var i = 1; i <= rootsCount; i++)
             {
@@ -65,12 +68,12 @@ namespace Z_City
                     _c[endInd, startInd] = edge.EdgeWeight;
                 }
 
-                if (edge.EdgeWeight > l)
+                if (edge.EdgeWeight > _l)
                 {
-                    l = edge.EdgeWeight;
+                    _l = edge.EdgeWeight;
                 }
             }
-            dl = l / 5;
+            _dl = _l / 5;
 
             CalculateDistance();
         }
@@ -161,7 +164,7 @@ namespace Z_City
                     }
                 }
 
-                l += dl;
+                _l += _dl;
             }
             while (!IsCovered(edgesRoots));
 
@@ -177,7 +180,7 @@ namespace Z_City
             var dSecond = _d[secondStartInd, endInd] + (edge.EdgeWeight - dif);
             var d = Math.Min(dFirst, dSecond);
 
-            return d * end.RootWeight <= l;
+            return d * end.RootWeight <= _l;
         }
 
         private bool IsCovered(int[][] roots)
@@ -201,20 +204,88 @@ namespace Z_City
 
         private void FindMinCover(int[][] roots, int[] points)
         {
-            // столбцы, которые покрывает одна строка
-            var cores = new List<int>();
-            for (var i = 0; i < _g.RootsCount; i++)
+            _y = new List<Edges>();
+
+            // если есть строка, покрывающая все вершины
+            for (var i = 0; i < _g.EdgesCount; i++)
             {
                 var sum = 0;
-                for (var j = 0; j < _g.EdgesCount; j++)
+                for (var j = 0; j < _g.RootsCount; j++)
                 {
                     sum += roots[j][i];
                 }
 
+                if (sum == _g.RootsCount)
+                {
+                    _y.Add(new Edges
+                    {
+                        StartRoot = _g.EdgesArray[i].StartRoot,
+                        EndRoot = _g.EdgesArray[i].EndRoot,
+                        EdgeWeight = points[i]
+                    });
+
+                    return;
+                }
+            }
+
+            // столбцы, которые покрывает одна строка
+            for (var i = 0; i < _g.RootsCount; i++)
+            {
+                var sum = 0;
+                var last = 0;
+                for (var j = 0; j < _g.EdgesCount; j++)
+                {
+                    sum += roots[j][i];
+                    if (roots[j][i] == 1)
+                    {
+                        last = j;
+                    }
+                }
+
                 if (sum == 1)
                 {
-                    cores.Add(i);
+                    _y.Add(new Edges
+                    {
+                        StartRoot = _g.EdgesArray[last].StartRoot,
+                        EndRoot = _g.EdgesArray[last].EndRoot,
+                        EdgeWeight = points[last]
+                    });
                 }
+            }
+
+            // чистим строки, которые можно поглотить
+            for (var i = 0; i < _g.EdgesCount; i++)
+            {
+                for (var j = 0; j < _g.EdgesCount; j++)
+                {
+                    if (i == j) continue;
+
+                    if (Contains(roots[i], roots[j]) && roots[j].Any(r => r > 0))
+                    {
+                        Clear(roots[j]);
+                    }
+                }
+            }
+
+            var s = roots.Count(root => root.Any(r => r > 0));
+        }
+
+        // true, если массив а содержит массив b
+        private bool Contains(int[] a, int[] b)
+        {
+            for (var i = 0; i < a.Length; i++)
+            {
+                if (b[i] > a[i]) return false;
+            }
+
+            return true;
+        }
+
+        private void Clear(int[] arr)
+        {
+            for (var i = 0; i < arr.Length; i++)
+            {
+                arr[i] = 0;
             }
         }
 
