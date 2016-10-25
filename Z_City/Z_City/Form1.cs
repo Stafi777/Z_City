@@ -229,6 +229,7 @@ namespace Z_City
             }
 
             // столбцы, которые покрывает одна строка
+            var rest = new List<int[]>();
             for (var i = 0; i < _g.RootsCount; i++)
             {
                 var sum = 0;
@@ -244,6 +245,7 @@ namespace Z_City
 
                 if (sum == 1)
                 {
+                    rest.Add(roots[i]);
                     _y.Add(new Edges
                     {
                         StartRoot = _g.EdgesArray[last].StartRoot,
@@ -268,10 +270,9 @@ namespace Z_City
             }
 
             // выбираем оставшиеся точки
-            var rest = new List<int[]>();
             for (var i = 0; i < roots.Length; i++)
             {
-                if (roots[i].Any(e => e > 0))
+                if (roots[i].Any(e => e > 0) && !rest.Contains(roots[i]))
                 {
                     rest.Add(roots[i]);
                     _y.Add(new Edges
