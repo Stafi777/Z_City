@@ -185,10 +185,10 @@ namespace Z_City
 
         private bool IsCovered(int[][] roots)
         {
-            for (var i = 0; i < _g.RootsCount; i++)
+            for (var i = 0; i < roots[0].Length; i++)
             {
                 var covered = false;
-                for (var j = 0; j < _g.EdgesCount; j++)
+                for (var j = 0; j < roots.Length; j++)
                 {
                     if (roots[j][i] == 1)
                     {
@@ -212,7 +212,7 @@ namespace Z_City
                 var sum = 0;
                 for (var j = 0; j < _g.RootsCount; j++)
                 {
-                    sum += roots[j][i];
+                    sum += roots[i][j];
                 }
 
                 if (sum == _g.RootsCount)
@@ -267,7 +267,41 @@ namespace Z_City
                 }
             }
 
-            var s = roots.Count(root => root.Any(r => r > 0));
+            // выбираем оставшиеся точки
+            var rest = new List<int[]>();
+            for (var i = 0; i < roots.Length; i++)
+            {
+                if (roots[i].Any(e => e > 0))
+                {
+                    rest.Add(roots[i]);
+                    _y.Add(new Edges
+                    {
+                        StartRoot = _g.EdgesArray[i].StartRoot,
+                        EndRoot = _g.EdgesArray[i].EndRoot,
+                        EdgeWeight = points[i]
+                    });
+                }
+            }
+
+            var rand = new Random();
+            for (var i = 0; i < rest.Count * 4; i++)
+            {
+                var ind = rand.Next(rest.Count - 1);
+                var row = rest[ind];
+
+                rest.Remove(row);
+
+                // если после удаления точки покрытие сохраняется - удаляем точку
+                // иначе - возвращаем назад
+                if (IsCovered(rest.ToArray()))
+                {
+                    _y.RemoveAt(ind);
+                }
+                else
+                {
+                    rest.Add(row);
+                }
+            }
         }
 
         // true, если массив а содержит массив b
